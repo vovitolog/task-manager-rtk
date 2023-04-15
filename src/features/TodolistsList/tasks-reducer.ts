@@ -1,11 +1,33 @@
-import {AddTodolistActionType, RemoveTodolistActionType, SetTodolistsActionType} from './todolists-reducer'
 import {TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType} from 'api/todolists-api'
 import {Dispatch} from 'redux'
-import {AppRootStateType, AppThunk} from 'app/store'
+import {AppThunk} from 'app/store'
 import {handleServerAppError, handleServerNetworkError} from 'utils/error-utils'
 import {appActions} from "../../app/app-reducer";
+import {createSlice} from "@reduxjs/toolkit";
+import {todolistsActions} from "./todolists-reducer";
 
 const initialState: TasksStateType = {}
+
+const slice = createSlice({
+        name: 'tasks',
+        initialState,
+        reducers: {},
+        extraReducers: builder => {
+            builder
+                .addCase(todolistsActions.addTodolist, (state, action) => {
+                    state[action.payload.todolist.id] = []
+                })
+                .addCase(todolistsActions.removeTodolist, (state, action) => {
+                    delete state[action.payload.id]
+                })
+                .addCase(todolistsActions.setTodolists, (state, action)=> {
+                    action.payload.todolists.forEach(todo => {
+                        state[todo.id] = []
+                    })
+                })
+        }
+    }
+)
 
 export const tasksReducer = (state: TasksStateType = initialState, action: ActionsType): TasksStateType => {
     switch (action.type) {
@@ -19,19 +41,6 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Actio
                 [action.todolistId]: state[action.todolistId]
                     .map(t => t.id === action.taskId ? {...t, ...action.model} : t)
             }
-        case 'ADD-TODOLIST':
-            return {...state, [action.todolist.id]: []}
-        case 'REMOVE-TODOLIST':
-            const copyState = {...state}
-            delete copyState[action.id]
-            return copyState
-        case 'SET-TODOLISTS': {
-            const copyState = {...state}
-            action.todolists.forEach(tl => {
-                copyState[tl.id] = []
-            })
-            return copyState
-        }
         case 'SET-TASKS':
             return {...state, [action.todolistId]: action.tasks}
         default:
@@ -51,12 +60,12 @@ export const setTasksAC = (tasks: Array<TaskType>, todolistId: string) =>
 
 // thunks
 export const fetchTasksTC = (todolistId: string): AppThunk => (dispatch) => {
-    dispatch( appActions.setAppStatus({status: 'loading'}))
+    dispatch(appActions.setAppStatus({status: 'loading'}))
     todolistsAPI.getTasks(todolistId)
         .then((res) => {
             const tasks = res.data.items
             dispatch(setTasksAC(tasks, todolistId))
-            dispatch( appActions.setAppStatus({status: 'succeeded'}))
+            dispatch(appActions.setAppStatus({status: 'succeeded'}))
         })
 }
 export const removeTaskTC = (taskId: string, todolistId: string) => (dispatch: Dispatch<ActionsType>) => {
@@ -67,14 +76,14 @@ export const removeTaskTC = (taskId: string, todolistId: string) => (dispatch: D
         })
 }
 export const addTaskTC = (title: string, todolistId: string): AppThunk => (dispatch) => {
-    dispatch( appActions.setAppStatus({status: 'loading'}))
+    dispatch(appActions.setAppStatus({status: 'loading'}))
     todolistsAPI.createTask(todolistId, title)
         .then(res => {
             if (res.data.resultCode === 0) {
                 const task = res.data.data.item
                 const action = addTaskAC(task)
                 dispatch(action)
-                dispatch( appActions.setAppStatus({status: 'succeeded'}))
+                dispatch(appActions.setAppStatus({status: 'succeeded'}))
             } else {
                 handleServerAppError(res.data, dispatch);
             }
@@ -133,8 +142,5 @@ type ActionsType =
     | ReturnType<typeof removeTaskAC>
     | ReturnType<typeof addTaskAC>
     | ReturnType<typeof updateTaskAC>
-    | AddTodolistActionType
-    | RemoveTodolistActionType
-    | SetTodolistsActionType
     | ReturnType<typeof setTasksAC>
 

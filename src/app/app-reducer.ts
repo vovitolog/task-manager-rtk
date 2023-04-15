@@ -5,7 +5,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 const initialState = {
     status: 'idle' as RequestStatusType,
-    error: null as string  | null,
+    error: null as string | null,
     isInitialized: false
 }
 
@@ -16,7 +16,7 @@ const slice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        setAppError: (state, action: PayloadAction<{ error: string | null}>) => {
+        setAppError: (state, action: PayloadAction<{ error: string | null }>) => {
             state.error = action.payload.error
         },
         setAppStatus: (state, action: PayloadAction<{ status: RequestStatusType }>) => {
@@ -53,7 +53,6 @@ export const initializeAppTC = () => (dispatch: Dispatch) => {
         } else {
 
         }
-
         dispatch(appActions.setAppInitialized({isInitialized: true}));
     })
 }
