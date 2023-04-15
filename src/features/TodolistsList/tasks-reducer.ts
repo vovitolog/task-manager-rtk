@@ -5,16 +5,17 @@ import {handleServerAppError, handleServerNetworkError} from 'utils/error-utils'
 import {appActions} from "../../app/app-reducer";
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {todolistsActions} from "./todolists-reducer";
+import {clearTasksAndTodolists} from "../../common/common.actions";
 
-const fetchTasks = createAsyncThunk('tasks/fetchTasks', (todolistId:string, thunkAPI) => {
+const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (todolistId: string, thunkAPI) => {
     const {dispatch} = thunkAPI
     dispatch(appActions.setAppStatus({status: 'loading'}))
-    todolistsAPI.getTasks(todolistId)
-        .then((res) => {
-            const tasks = res.data.items
-            dispatch(tasksActions.setTasks({tasks, todolistId}))
-            dispatch(appActions.setAppStatus({status: 'succeeded'}))
-        })
+    const res = await todolistsAPI.getTasks(todolistId)
+    const tasks = res.data.items
+    dispatch(appActions.setAppStatus({status: 'succeeded'}))
+    //  dispatch(tasksActions.setTasks({tasks, todolistId}))
+    return {tasks, todolistId}
+
 })
 
 const initialState: TasksStateType = {}
@@ -45,13 +46,16 @@ const slice = createSlice({
                 }
                 tasks.map(t => t.id === action.payload.taskId ? {...t, ...action.payload.model} : t)
             },
-            setTasks: (state, action: PayloadAction<{ tasks: Array<TaskType>, todolistId: string }>) => {
-                state[action.payload.todolistId] = action.payload.tasks
-            },
-
+            // setTasks: (state, action: PayloadAction<{ tasks: Array<TaskType>, todolistId: string }>) => {
+            //     state[action.payload.todolistId] = action.payload.tasks
+            // },
         },
         extraReducers: builder => {
             builder
+                .addCase(fetchTasks.fulfilled, (state, action) => {
+                    state[action.payload.todolistId] = action.payload.tasks
+                })
+
                 .addCase(todolistsActions.addTodolist, (state, action) => {
                     state[action.payload.todolist.id] = []
                 })
@@ -62,6 +66,9 @@ const slice = createSlice({
                     action.payload.todolists.forEach(todo => {
                         state[todo.id] = []
                     })
+                })
+                .addCase(clearTasksAndTodolists, () => {
+                    return {}
                 })
         }
     }
