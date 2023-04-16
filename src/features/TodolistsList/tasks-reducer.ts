@@ -1,7 +1,5 @@
 import {
-    AddTaskArgType, ResultCode,
-    TaskPriorities,
-    TaskStatuses,
+    AddTaskArgType,
     TaskType,
     todolistsAPI, UpdateTaskArgType,
     UpdateTaskModelType
@@ -14,6 +12,7 @@ import {todolistsActions} from "./todolists-reducer";
 import {clearTasksAndTodolists} from "common/common.actions";
 import {createAppAsyncThunk} from "common/utils";
 import {handleServerAppError, handleServerNetworkError} from 'common/utils';
+import {ResultCode, TaskPriorities, TaskStatuses} from "common/enums/common.enums";
 
 const fetchTasks = createAppAsyncThunk<{
     tasks: TaskType[],
