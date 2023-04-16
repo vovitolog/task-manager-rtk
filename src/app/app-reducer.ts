@@ -1,5 +1,5 @@
 import {Dispatch} from 'redux'
-import {authAPI} from 'api/todolists-api'
+import {authAPI} from 'common/api/todolists-api'
 import {authActions} from "features/auth/auth-reducer";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 

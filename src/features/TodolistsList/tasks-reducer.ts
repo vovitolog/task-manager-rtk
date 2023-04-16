@@ -5,16 +5,15 @@ import {
     TaskType,
     todolistsAPI, UpdateTaskArgType,
     UpdateTaskModelType
-} from 'api/todolists-api'
+} from 'common/api/todolists-api'
 import {Dispatch} from 'redux'
 import {AppThunk} from 'app/store'
-import {handleServerAppError} from 'utils/handle-server-app-error'
-import {handleServerNetworkError} from 'utils/handle-server-network-error'
 import {appActions} from "app/app-reducer";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {todolistsActions} from "./todolists-reducer";
 import {clearTasksAndTodolists} from "common/common.actions";
-import {createAppAsyncThunk} from "utils/create-app-async-thunk";
+import {createAppAsyncThunk} from "common/utils";
+import {handleServerAppError, handleServerNetworkError} from 'common/utils';
 
 const fetchTasks = createAppAsyncThunk<{
     tasks: TaskType[],
