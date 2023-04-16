@@ -1,35 +1,20 @@
-import axios from 'axios'
-import {UpdateDomainTaskModelType} from "features/TodolistsList/tasks-reducer";
+import {instance} from "common/api";
 import {TaskPriorities, TaskStatuses} from "common/enums/common.enums";
+import {UpdateDomainTaskModelType} from "features/TodolistsList/tasks-reducer";
+import {ResponseType} from "common/types/common-types";
 
-const settings = {
-    withCredentials: true,
-    headers: {
-        'API-KEY': '1cdd9f77-c60e-4af5-b194-659e4ebd5d41'
-    }
-}
-const instance = axios.create({
-    baseURL: 'https://social-network.samuraijs.com/api/1.1/',
-    ...settings
-})
-
-// api
-export const todolistsAPI = {
+export const todolistsApi = {
     getTodolists() {
-        const promise = instance.get<TodolistType[]>('todo-lists');
-        return promise;
+        return instance.get<TodolistType[]>('todo-lists');
     },
     createTodolist(title: string) {
-        const promise = instance.post<ResponseType<{ item: TodolistType }>>('todo-lists', {title: title});
-        return promise;
+        return instance.post<ResponseType<{ item: TodolistType }>>('todo-lists', {title: title});
     },
     deleteTodolist(id: string) {
-        const promise = instance.delete<ResponseType>(`todo-lists/${id}`);
-        return promise;
+        return instance.delete<ResponseType>(`todo-lists/${id}`);
     },
     updateTodolist(id: string, title: string) {
-        const promise = instance.put<ResponseType>(`todo-lists/${id}`, {title: title});
-        return promise;
+        return instance.put<ResponseType>(`todo-lists/${id}`, {title: title});
     },
     getTasks(todolistId: string) {
         return instance.get<GetTasksResponse>(`todo-lists/${todolistId}/tasks`);
@@ -47,40 +32,11 @@ export const todolistsAPI = {
     }
 }
 
-
-export type LoginParamsType = {
-    email: string
-    password: string
-    rememberMe: boolean
-    captcha?: string
-}
-
-export const authAPI = {
-    login(data: LoginParamsType) {
-        const promise = instance.post<ResponseType<{ userId?: number }>>('auth/login', data);
-        return promise;
-    },
-    logout() {
-        const promise = instance.delete<ResponseType<{ userId?: number }>>('auth/login');
-        return promise;
-    },
-    me() {
-        const promise = instance.get<ResponseType<{ id: number; email: string; login: string }>>('auth/me');
-        return promise
-    }
-}
-
-// types
 export type TodolistType = {
     id: string
     title: string
     addedDate: string
     order: number
-}
-export type ResponseType<D = {}> = {
-    resultCode: number
-    messages: Array<string>
-    data: D
 }
 export type TaskType = {
     description: string
@@ -102,7 +58,7 @@ export type UpdateTaskModelType = {
     startDate: string
     deadline: string
 }
-type GetTasksResponse = {
+export type GetTasksResponse = {
     error: string | null
     totalCount: number
     items: TaskType[]
@@ -118,4 +74,3 @@ export type UpdateTaskArgType = {
     domainModel: UpdateDomainTaskModelType,
     todolistId: string
 }
-
