@@ -8,7 +8,8 @@ import {
 } from 'api/todolists-api'
 import {Dispatch} from 'redux'
 import {AppThunk} from 'app/store'
-import {handleServerAppError, handleServerNetworkError} from 'utils/error-utils'
+import {handleServerAppError} from 'utils/handle-server-app-error'
+import {handleServerNetworkError} from 'utils/handle-server-network-error'
 import {appActions} from "app/app-reducer";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {todolistsActions} from "./todolists-reducer";
@@ -79,7 +80,7 @@ const updateTask = createAppAsyncThunk<UpdateTaskArgType, UpdateTaskArgType>
 
         const res = await todolistsAPI.updateTask(arg.todolistId, arg.taskId, apiModel)
 
-        if (res.data.resultCode ===  ResultCode.Success) {
+        if (res.data.resultCode === ResultCode.Success) {
             dispatch(appActions.setAppStatus({status: 'succeeded'}))
             return arg
         } else {
@@ -103,18 +104,6 @@ const slice = createSlice({
                 const index = tasks.findIndex(t => t.id === action.payload.taskId)
                 if (index !== -1) tasks.splice(index, 1)
             },
-            // updateTask: (state, action: PayloadAction<{
-            //     taskId: string,
-            //     model: UpdateDomainTaskModelType,
-            //     todolistId: string
-            // }>) => {
-            //     const tasks = state[action.payload.todolistId]
-            //     const index = tasks.findIndex(t => t.id === action.payload.taskId)
-            //     if (index !== -1) {
-            //         tasks[index] = {...tasks[index], ...action.payload.model}
-            //     }
-            //     tasks.map(t => t.id === action.payload.taskId ? {...t, ...action.payload.model} : t)
-            // },
         },
         extraReducers: builder => {
             builder
