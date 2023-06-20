@@ -19,3 +19,9 @@ export type LoginParamsType = {
     rememberMe: boolean
     captcha?: string
 }
+
+type FormikErrorType = {
+    email?: string
+    password?: string
+    rememberMe?: boolean
+}

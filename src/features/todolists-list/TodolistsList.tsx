@@ -1,16 +1,17 @@
 import React, { useCallback, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { FilterValuesType, todolistsActions, todolistsThunks } from 'features/TodolistsList/todolists.reducer'
-import { tasksThunks } from 'features/TodolistsList/tasks.reducer'
 import { Grid, Paper } from '@mui/material'
 import { AddItemForm } from 'common/components'
 import { Todolist } from './Todolist/Todolist'
 import { Navigate } from 'react-router-dom'
 import { useActions } from 'common/hooks';
 import { selectIsLoggedIn } from 'features/auth/auth.selectors';
-import { selectTasks } from 'features/TodolistsList/tasks.selectors';
-import { selectTodolists } from 'features/TodolistsList/todolists.selectors';
 import { TaskStatuses } from 'common/enums';
+import {selectTodolists} from "features/todolists-list/todolists/todolists.selectors";
+import {selectTasks} from "features/todolists-list/tasks/tasks.selectors";
+import {todolistsActions, todolistsThunks} from './todolists/todolists.reducer'
+import { tasksThunks } from './tasks/tasks.reducer'
+import {FilterValuesType} from "features/todolists-list/todolists/todolists.reducer";
 
 
 export const TodolistsList = () => {
@@ -33,7 +34,7 @@ export const TodolistsList = () => {
         if (!isLoggedIn) {
             return;
         }
-        fetchTodolists()
+        fetchTodolists({})
     }, [])
 
     const removeTask = useCallback(function (taskId: string, todolistId: string) {
@@ -74,9 +75,11 @@ export const TodolistsList = () => {
 
     return <>
         <Grid container style={{padding: '20px'}}>
+            <Paper  style={{padding: '10px'}}>
             <AddItemForm addItem={addTodolist}/>
+            </Paper>
         </Grid>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} style={{paddingBottom: '20px'}}>
             {
                 todolists.map(tl => {
                     let allTodolistTasks = tasks[tl.id]

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import {
@@ -11,15 +11,14 @@ import {
     Toolbar,
     Typography
 } from '@mui/material';
-import { Menu } from '@mui/icons-material'
 import { Login } from 'features/auth/Login/Login'
 import './App.css'
-import { TodolistsList } from 'features/TodolistsList/TodolistsList'
 import { ErrorSnackbar } from 'common/components'
 import { useActions } from 'common/hooks';
 import { selectIsLoggedIn } from 'features/auth/auth.selectors';
 import { selectAppStatus, selectIsInitialized } from 'app/app.selectors';
 import { authThunks } from 'features/auth/auth.reducer';
+import { TodolistsList } from 'features/todolists-list/TodolistsList';
 
 function App() {
     const status = useSelector(selectAppStatus)
@@ -29,10 +28,10 @@ function App() {
     const {initializeApp, logout} = useActions(authThunks)
 
     useEffect(() => {
-        initializeApp()
+        initializeApp({})
     }, [])
 
-    const logoutHandler = () => logout()
+    const logoutHandler = () => logout({})
 
     if (!isInitialized) {
         return <div
@@ -43,21 +42,18 @@ function App() {
 
     return (
         <BrowserRouter>
-            <div className="App">
+            <div className="App" >
                 <ErrorSnackbar/>
                 <AppBar position="static">
-                    <Toolbar>
-                        <IconButton edge="start" color="inherit" aria-label="menu">
-                            <Menu/>
-                        </IconButton>
+                    <Toolbar sx={{justifyContent: 'space-between'}}>
                         <Typography variant="h6">
-                            News
+                            Todos
                         </Typography>
                         {isLoggedIn && <Button color="inherit" onClick={logoutHandler}>Log out</Button>}
                     </Toolbar>
                     {status === 'loading' && <LinearProgress/>}
                 </AppBar>
-                <Container fixed>
+                <Container  fixed>
                     <Routes>
                         <Route path={'/'} element={<TodolistsList/>}/>
                         <Route path={'/login'} element={<Login/>}/>
