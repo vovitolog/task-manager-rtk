@@ -2,7 +2,7 @@ import React, {useCallback, useEffect} from 'react'
 import {useSelector} from 'react-redux'
 import {Grid, Paper} from '@mui/material'
 import {AddItemForm} from 'common/components'
-import {Todolist} from './Todolist/Todolist'
+import {Todolist} from './todolists/Todolist/Todolist'
 import {Navigate} from 'react-router-dom'
 import {useActions} from 'common/hooks';
 import {selectIsLoggedIn} from 'features/auth/auth.selectors';

@@ -4,9 +4,9 @@ import {EditableSpan} from 'common/components/EditableSpan/EditableSpan'
 import {Delete} from '@mui/icons-material'
 import {TaskStatuses} from "common/enums/common.enums";
 import {TaskType} from "features/todolists-list/tasks/tasks.api";
-import {tasksThunks} from "../../tasks/tasks.reducer";
+import {tasksThunks} from "features/todolists-list/tasks/tasks.reducer";
 import {useActions} from "common/hooks";
-import styles from "./styles.module.css"
+import styles from "features/todolists-list/todolists/Todolist/Tasks/Task/styles.module.css"
 
 type Props = {
     task: TaskType
