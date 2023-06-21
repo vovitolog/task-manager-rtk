@@ -8,26 +8,14 @@ import {useActions} from 'common/hooks';
 import {selectIsLoggedIn} from 'features/auth/auth.selectors';
 import {selectTodolists} from "features/todolists-list/todolists/todolists.selectors";
 import {selectTasks} from "features/todolists-list/tasks/tasks.selectors";
-import {todolistsActions, todolistsThunks} from './todolists/todolists.reducer'
-import {tasksThunks} from './tasks/tasks.reducer'
-import {FilterValuesType} from "features/todolists-list/todolists/todolists.reducer";
-
+import {todolistsThunks} from './todolists/todolists.reducer'
 
 export const TodolistsList = () => {
     const todolists = useSelector(selectTodolists)
     const tasks = useSelector(selectTasks)
     const isLoggedIn = useSelector(selectIsLoggedIn)
 
-    const {
-        removeTodolist: removeTodolistThunk,
-        addTodolist: addTodolistThunk,
-        fetchTodolists,
-        changeTodolistTitle: changeTodolistTitleThunk
-    } = useActions(todolistsThunks)
-
-
-    const {addTask: addTaskThunk} = useActions(tasksThunks)
-    const {changeTodolistFilter} = useActions(todolistsActions)
+    const {addTodolist, fetchTodolists} = useActions(todolistsThunks)
 
     useEffect(() => {
         if (!isLoggedIn) {
@@ -36,24 +24,8 @@ export const TodolistsList = () => {
         fetchTodolists({})
     }, [])
 
-    const addTask = useCallback(function (title: string, todolistId: string) {
-        addTaskThunk({title, todolistId})
-    }, [])
-
-    const changeFilter = useCallback(function (filter: FilterValuesType, id: string) {
-        changeTodolistFilter({id, filter})
-    }, [])
-
-    const removeTodolist = useCallback(function (id: string) {
-        removeTodolistThunk(id)
-    }, [])
-
-    const changeTodolistTitle = useCallback(function (id: string, title: string) {
-        changeTodolistTitleThunk({id, title})
-    }, [])
-
-    const addTodolist = useCallback((title: string) => {
-        addTodolistThunk(title)
+    const addTodolistCallback = useCallback((title: string) => {
+        addTodolist(title)
     }, [])
 
     if (!isLoggedIn) {
@@ -63,7 +35,7 @@ export const TodolistsList = () => {
     return <>
         <Grid container style={{padding: '20px'}}>
             <Paper style={{padding: '10px'}}>
-                <AddItemForm addItem={addTodolist}/>
+                <AddItemForm addItem={addTodolistCallback}/>
             </Paper>
         </Grid>
         <Grid container spacing={3} style={{paddingBottom: '20px'}}>
@@ -73,14 +45,7 @@ export const TodolistsList = () => {
 
                     return <Grid item key={tl.id}>
                         <Paper style={{padding: '10px'}}>
-                            <Todolist
-                                todolist={tl}
-                                tasks={allTodolistTasks}
-                                changeFilter={changeFilter}
-                                addTask={addTask}
-                                removeTodolist={removeTodolist}
-                                changeTodolistTitle={changeTodolistTitle}
-                            />
+                            <Todolist todolist={tl} tasks={allTodolistTasks}/>
                         </Paper>
                     </Grid>
                 })
